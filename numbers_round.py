@@ -1,5 +1,5 @@
 from random import randint
-from itertools import product, combinations
+from itertools import product, permutations
 
 def target_number():
   return randint(100, 999)
@@ -42,22 +42,18 @@ def expression_is_proper(user_expression : str, target_number : int):
 
 
 def computer_solution(target_number : int, generated_arr : list):
-  operations = [i for i in product(['+', '-', '*', '//'], repeat=5)]
+  operations = ['+', '-', '*', '//']
   
-  for i in (2, len(generated_arr) + 1):
-    for arr in combinations(generated_arr, i):
-      for _ in operations:
-        evaluate_string = ''
+  for i in range(2,len(generated_arr)+1):
+    for array in permutations(generated_arr,r=i):
+      for operation_chain in product(operations, repeat=len(array)-1):
+        expression = str(array[0])
         
-        for j in range(len(arr)):
-          evaluate_string += str(arr[j])
-          evaluate_string += _[j]
+        for operation, number in zip(operation_chain, array[1:]):
+          expression += f' {operation} {number}'
         
-        evaluate_string = evaluate_string.rstrip('+').rstrip('-').rstrip('*').rstrip('//')
-        evaluation_result = eval(evaluate_string)
-        
-        if evaluation_result == target_number:
-          return evaluate_string
+        if eval(expression) == target_number:
+          return expression
   
   return 'the solution does not exist'
 
